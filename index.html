@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio - Ferdi Ardianto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        [x-cloak] { display: none !important; }
+        html { scroll-behavior: smooth; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-syne { font-family: 'Syne', sans-serif; }
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, #111 1px, transparent 1px),
+                              linear-gradient(to bottom, #111 1px, transparent 1px);
+        }
+
+        @keyframes slideInRight {
+            0%   { transform: translateX(100px); opacity: 0; }
+            100% { transform: translateX(0);     opacity: 1; }
+        }
+
+        @keyframes dropDownRight {
+            0%   { transform: translate(100px,-200px); opacity: 0; }
+            100% { transform: translate(0,0);          opacity: 1; }
+        }
+
+        .animate-text  { animation: slideInRight  1.2s cubic-bezier(0.16,1,0.3,1)    forwards; animation-delay:.5s;  opacity:0; }
+        .animate-photo { animation: dropDownRight 1.5s cubic-bezier(0.34,1.56,0.64,1) forwards; animation-delay:.8s;  opacity:0; }
+        @keyframes customTextIn  { 0%{transform:translate(100%,100%);opacity:0}  100%{transform:translate(0,0);opacity:1} }
+        @keyframes customPhotoIn { 0%{transform:translate(100%,-100%);opacity:0} 100%{transform:translate(0,0);opacity:1} }
+        .shown .animate-custom-text  { animation:customTextIn  1.5s cubic-bezier(0.16,1,0.3,1)    forwards; opacity:0; }
+        .shown .animate-custom-photo { animation:customPhotoIn 1.8s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity:0; }
+        .card-profile { background:#0a0a0a; border:1px solid #222; box-shadow:0 30px 60px -12px rgba(0,0,0,0.7); }
+        .card-main    { background:#0f0f0f; border:1px solid #1a1a1a; border-radius:24px; padding:20px; transition:all .5s ease; }
+        .card-main:hover { border-color:#fff; transform:translateY(-10px); }
+        .tech-card     { background:#0f0f0f; border:1px solid #1a1a1a; border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:all .4s ease; }
+        .tech-icon-box { width:54px; height:54px; background:#1a1a1a; border-radius:14px; margin-bottom:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        header { position:sticky; top:0; z-index:100; background-color:rgba(0,0,0,0.8); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); width:100%; }
+        .edu-item { border-left:1px solid #222; padding-left:24px; position:relative; }
+        .edu-item::before { content:''; position:absolute; left:-5px; top:0; width:9px; height:9px; background:#fff; border-radius:50%; }
+        .video-container { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:24px; border:1px solid #222; }
+        .video-container iframe { position:absolute; top:0; left:0; width:100%; height:100%; }
+        .gallery-overlay { position:absolute; bottom:0; left:0; right:0; padding:24px; background:linear-gradient(to top,rgba(0,0,0,.8),transparent); transform:translateY(100%); transition:transform .5s ease; }
+        .gallery-card:hover .gallery-overlay { transform:translateY(0); }
+
+        #lanyard-root {
+            position: absolute;
+            right: 5vw;
+            top: 0;
+            width: clamp(176px, 18vw, 256px);
+            height: calc(220px + clamp(240px, 26vw, 320px));
+            overflow: visible;
+            z-index: 200;           
+        }
+
+        #lanyard-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: none;
+            z-index: 201;
+        }
+
+        #lanyard-card {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: clamp(240px, 26vw, 320px);
+            border-radius: 24px;
+            overflow: hidden;
+            cursor: grab;
+            z-index: 202;
+        }
+
+        #lanyard-card:active { cursor: grabbing; }
+        #lanyard-card img { width:100%; height:100%; object-fit:cover; object-position: center top; transition:transform .7s ease; display:block; }
+        #lanyard-card:hover img { transform:scale(1.05); }
+        @media (max-width: 640px) {
+
+        #lanyard-root {
+             right: 4vw;
+             width: clamp(140px, 38vw, 176px);
+             height: calc(160px + clamp(180px, 35vw, 240px));
+        }
+
+        #lanyard-card {
+            height: clamp(180px, 35vw, 240px);
+        }
+           
+        }
+
+        .gallery-card {
+            position: absolute;
+            width: 140px;
+            height: 210px;
+            background-color: #0c0c0c;
+            border: 1px solid #1c1c1c;
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            transform-origin: bottom center;
+            will-change: transform, opacity, filter, border-color, box-shadow;
+            transition: transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), 
+                    opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.4s ease, 
+                    box-shadow 0.4s ease;
+        }
+
+        @media (min-width: 768px) {
+            .gallery-card {
+                width: 220px;
+                height: 320px;
+        }
+    }
+
+            .gallery-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                pointer-events: none;
+                filter: grayscale(100%) brightness(60%);
+                will-change: filter;
+                transition: filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            .gallery-closed .gallery-card {
+                transform: translate(0px, 100px) rotate(0deg) scale(0.75) !important;
+                opacity: 0;
+            }
+
+            .gallery-opened .gallery-card {
+                opacity: 1;
+            }
+            .gallery-opened .card-paling-kiri { transform: translate(var(--tx-mob), var(--ty-mob)) rotate(var(--deg)) scale(1); }
+            .gallery-opened .card-kiri        { transform: translate(var(--tx-mob), var(--ty-mob)) rotate(var(--deg)) scale(1); }
+            .gallery-opened .card-tengah      { transform: translate(var(--tx-mob), var(--ty-mob)) rotate(var(--deg)) scale(1); }
+            .gallery-opened .card-kanan       { transform: translate(var(--tx-mob), var(--ty-mob)) rotate(var(--deg)) scale(1); }
+            .gallery-opened .card-paling-kanan { transform: translate(var(--tx-mob), var(--ty-mob)) rotate(var(--deg)) scale(1); }
+
+            @media (min-width: 768px) {
+                .gallery-opened .card-paling-kiri { transform: translate(var(--tx-desk), var(--ty-desk)) rotate(var(--deg)) scale(1); }
+                .gallery-opened .card-kiri        { transform: translate(var(--tx-desk), var(--ty-desk)) rotate(var(--deg)) scale(1); }
+                .gallery-opened .card-tengah      { transform: translate(var(--tx-desk), var(--ty-desk)) rotate(var(--deg)) scale(1); }
+                .gallery-opened .card-kanan       { transform: translate(var(--tx-desk), var(--ty-desk)) rotate(var(--deg)) scale(1); }
+                .gallery-opened .card-paling-kanan { transform: translate(var(--tx-desk), var(--ty-desk)) rotate(var(--deg)) scale(1); }
+            }
+
+            .gallery-opened .gallery-card:hover {
+                transform: translate(var(--tx-mob), calc(var(--ty-mob) - 35px)) rotate(0deg) scale(1.08) !important;
+                z-index: 100 !important;
+                border-color: rgba(255, 255, 255, 0.4);
+                box-shadow: 0 20px 40px rgba(255, 255, 255, 0.15);
+            }
+
+            @media (min-width: 768px) {
+                .gallery-opened .gallery-card:hover {
+                    transform: translate(var(--tx-desk), calc(var(--ty-desk) - 45px)) rotate(0deg) scale(1.08) !important;
+                }
+            }
+
+            .gallery-card:hover img {
+                filter: grayscale(0%) brightness(100%);
+            }
+
+            .card-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                display: flex;
+                flex-col: justify-end;
+                padding: 1rem;
+                align-items: flex-end;
+            }
+            .gallery-card:hover .card-overlay {
+                opacity: 1;
+            }
+
+            @keyframes marquee {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-50%); }
+            }
+
+            .reveal-wrapper {
+                overflow: hidden;
+                display: block;
+            }
+            .reveal-text {
+                transform: translateY(110%);
+                will-change: transform;
+                transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .reveal-active .reveal-text {
+                transform: translateY(0%);
+            }
+
+    </style>
+
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<body x-data="{ intro: true }" x-init="setTimeout(() => intro = false, 2500)">
+<body class="bg-black text-white antialiased">
+<canvas id="global-dust" class="fixed inset-0 w-full h-full pointer-events-none z-[-1] block"></canvas>
+
+    <div x-show="intro"
+
+         x-transition:leave="transition ease-in duration-700"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center text-center">
+        <div class="flex space-x-6 mb-6 items-center">
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center shadow-lg shadow-black/50">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+            </div>
+
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center shadow-lg shadow-black/50">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            </div>
+
+            <div class="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center shadow-lg shadow-black/50">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0a15.691 15.691 0 002.193-8.5H9.807A15.691 15.691 0 0012 21zm0-18a15.691 15.691 0 012.193 8.5H9.807A15.691 15.691 0 0112 3zm6.82 5.5H5.18M18.82 14.5H5.18"/></svg>
+            </div>
+
+        </div>
+        <h1 class="font-syne text-4xl md:text-6xl tracking-tighter uppercase italic">Welcome to my<br>Portfolio</h1>
+        <p class="text-gray-600 text-[10px] mt-6 tracking-[0.5em] uppercase font-medium">www.ferdi.dev</p>
+    </div>
+
+    <div x-show="!intro" x-cloak class="min-h-screen bg-grid relative">
+
+        <header class="py-5 px-6 md:px-16 lg:px-32 flex justify-between items-center border-b border-white/5">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black font-syne font-bold text-sm">F</div>
+                <span class="font-syne uppercase tracking-widest text-xs text-white">Ferdi.dev</span>
+            </div>
+
+            <nav class="bg-[#0f0f0f]/80 border border-[#222] px-4 md:px-6 py-2.5 rounded-full flex items-center space-x-4 md:space-x-8 text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-gray-500 shadow-2xl">
+                <a href="#home"          class="hover:text-white transition">Home</a>
+                <a href="#about"         class="hover:text-white transition">About</a>
+                <a href="#portfolio"     class="hover:text-white transition hidden sm:inline">Portfolio</a>
+                <a href="#education"     class="hover:text-white transition hidden sm:inline">Riwayat</a>
+                <a href="#skills"        class="hover:text-white transition hidden sm:inline">Skill</a>
+                <a href="kerjasama.html" class="hover:text-white transition border-l border-white/10 pl-4 md:pl-6 text-gray-500">Kerja Sama</a>
+            </nav>
+        </header>
+
+        <main>
+
+            <section id="home"
+                class="relative min-h-screen flex items-center px-6 md:px-16 lg:px-32 border-b border-white/5"
+                style="overflow:visible;">
+                <div id="lanyard-root" class="animate-photo">
+                    <svg id="lanyard-svg" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+                        <defs>
+                            <linearGradient id="ropeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%"   stop-color="#3a3a3a"/>
+                                <stop offset="50%"  stop-color="#282828"/>
+                                <stop offset="100%" stop-color="#161616"/>
+                            </linearGradient>
+
+                            <linearGradient id="ropeShine" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%"   stop-color="rgba(255,255,255,0.28)"/>
+                                <stop offset="60%"  stop-color="rgba(255,255,255,0.06)"/>
+                                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                            </linearGradient>
+                        </defs>
+
+                        <g id="rope-left">
+                            <path id="rl-body"  fill="none" stroke="url(#ropeGrad)"              stroke-width="18" stroke-linecap="round"/>
+                            <path id="rl-shine" fill="none" stroke="url(#ropeShine)"              stroke-width="7"  stroke-linecap="round"/>
+                            <path id="rl-dash"  fill="none" stroke="rgba(255,255,255,0.09)"       stroke-width="18" stroke-linecap="round" stroke-dasharray="7,22"/>
+                            <path id="rl-text-path" fill="none"/>
+
+                            <text font-size="7" font-weight="900" fill="rgba(255,255,255,0.82)" letter-spacing="3.8" dy="-6.5">
+                                <textPath id="rl-textpath" href="#rl-text-path" startOffset="6%">DEVELOPER • DEVELOPER •</textPath>
+                            </text>
+                        </g>
+                        <g id="rope-right">
+                            <path id="rr-body"  fill="none" stroke="url(#ropeGrad)"              stroke-width="18" stroke-linecap="round"/>
+                            <path id="rr-shine" fill="none" stroke="url(#ropeShine)"              stroke-width="7"  stroke-linecap="round"/>
+                            <path id="rr-dash"  fill="none" stroke="rgba(255,255,255,0.09)"       stroke-width="18" stroke-linecap="round" stroke-dasharray="7,22"/>
+                            <path id="rr-text-path" fill="none"/>
+                            <text font-size="7" font-weight="900" fill="rgba(255,255,255,0.82)" letter-spacing="3.8" dy="-6.5">
+                                <textPath id="rr-textpath" href="#rr-text-path" startOffset="6%">DEVELOPER • DEVELOPER •</textPath>
+                            </text>
+                        </g>
+                        <g id="clip-group">
+                            <rect id="clip-body"  x="-11" y="-28" width="22" height="30" rx="5" fill="#2e2e2e" stroke="#555" stroke-width="1.2"/>
+                            <rect id="clip-hole"  x="-5.5" y="-24" width="11" height="20" rx="3" fill="#111"/>
+                            <rect id="clip-shine" x="-9"   y="-26" width="5"  height="12" rx="1.5" fill="rgba(255,255,255,0.20)"/>
+                            <circle id="clip-ring"  cx="0" cy="-30" r="7"   fill="none" stroke="#444" stroke-width="3.5"/>
+                            <circle id="clip-ring2" cx="0" cy="-30" r="2.8" fill="#111"/>
+                        </g>
+                    </svg>
+
+                    <div id="lanyard-card" class="card-profile select-none touch-none">
+                        <img src="asset/profil.jpeg" alt="Profile Ferdi Ardianto" draggable="false">
+                    </div>
+                </div>
+
+                <div class="max-w-5xl animate-text pr-4 md:pr-0" style="max-width:min(900px, 60vw);">
+                    <span class="text-[10px] tracking-[0.6em] text-gray-600 uppercase block mb-6 md:mb-8 font-semibold">Available for full-time & freelance</span>
+                    <h1 class="font-syne text-5xl sm:text-7xl md:text-[8rem] lg:text-[10rem] leading-[0.85] tracking-tighter mb-8 md:mb-10">
+                        Frontend <br><span class="text-white">Developer</span>
+                    </h1>
+
+                    <div class="flex items-start space-x-6 md:space-x-8 mt-6">
+                        <div class="w-12 md:w-16 flex-shrink-0"></div>
+                        <div class="max-w-xs md:max-w-md">
+                            <span class="text-xs text-gray-500 font-mono block mb-2">Mahasiswa_</span>
+                            <p class="text-gray-400 text-sm md:text-base leading-relaxed">Saat ini sedang mendalami fondasi fundamental dalam Pengenalan Perancangan Web. Fokus mengasah kemampuan menerjemahkan konsep struktur HTML5, estetika tata letak CSS3, dan prinsip responsivitas modern ke dalam baris kode murni, guna menciptakan antarmuka digital yang tidak hanya visualnya clean, tetapi juga fungsional bagi pengguna.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-6 md:space-x-8 mt-10">
+                    <div class="w-12 md:w-16 flex-shrink-0"></div>
+                    
+                    <div class="space-y-6">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-[#0f0f0f]/60 border border-white/5 text-gray-400 text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">React</span>
+                            <span class="bg-[#0f0f0f]/60 border border-white/5 text-gray-400 text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">JavaScript</span>
+                            <span class="bg-[#0f0f0f]/60 border border-white/5 text-gray-400 text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">Node.js</span>
+                            <span class="bg-[#0f0f0f]/60 border border-white/5 text-gray-400 text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">Tailwind</span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-4">
+                            <a href="#portfolio" class="group relative inline-flex items-center gap-2 bg-[#120e1e] hover:bg-[#1a142e] border border-[#2d1f4d] shadow-[0_0_20px_rgba(76,29,149,0.15)] hover:shadow-[0_0_25px_rgba(76,29,149,0.35)] text-gray-300 hover:text-white px-6 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300">
+                                Projects
+                                <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                                </svg>
+                            </a>
+                            
+                            <a href="#contact" class="group inline-flex items-center gap-2 bg-[#08080c] hover:bg-[#0f0f15] border border-white/5 hover:border-white/10 text-gray-400 hover:text-white px-6 py-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 shadow-xl">
+                                Contact
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615a2.25 2.25 0 01-1.07-1.916V6.75"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                       <div class="flex gap-3 pt-2">
+                            <a href="https://github.com/login" target="_blank" rel="noopener noreferrer" class="w-9 h-9 bg-[#0b0b10] border border-white/5 hover:border-[#3b2d6b] shadow-[0_0_10px_rgba(76,29,149,0.05)] hover:shadow-[0_0_15px_rgba(109,40,217,0.25)] rounded-xl flex items-center justify-center text-gray-500 hover:text-white transition-all duration-300">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+
+                            <a href="https://www.linkedin.com/login/in/?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin" target="_blank" rel="noopener noreferrer" class="w-9 h-9 bg-[#0b0b10] border border-white/5 hover:border-[#3b2d6b] shadow-[0_0_10px_rgba(76,29,149,0.05)] hover:shadow-[0_0_15px_rgba(109,40,217,0.25)] rounded-xl flex items-center justify-center text-gray-500 hover:text-white transition-all duration-300">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                                </svg>
+                            </a>
+
+                            <a href="https://instagram.com/username-kamu" target="_blank" rel="noopener noreferrer" class="w-9 h-9 bg-[#0b0b10] border border-white/5 hover:border-[#3b2d6b] shadow-[0_0_10px_rgba(76,29,149,0.05)] hover:shadow-[0_0_15px_rgba(109,40,217,0.25)] rounded-xl flex items-center justify-center text-gray-500 hover:text-white transition-all duration-300">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+            <section id="about" class="min-h-screen py-24 md:py-32 px-6 md:px-16 lg:px-32 border-b border-white/5" x-data="{ shown: false }" x-intersect="shown = true" :class="shown ? 'shown' : ''">
+            <div class="max-w-7xl mx-auto space-y-12">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center">
+                        <div class="space-y-6 md:col-span-7 animate-custom-text">
+                            <p class="text-[10px] tracking-[0.4em] text-gray-600 uppercase mb-4 font-bold">About Me</p>
+                            <h2 class="font-syne text-4xl md:text-5xl lg:text-7xl mb-6 leading-tight text-white">Ferdi <br> Ardianto</h2>
+                            <p class="text-gray-400 text-sm md:text-base leading-relaxed">
+                                Halo! Saya Ferdi Ardianto, seorang Mahasiswa yang saat ini sedang menempuh semester 2 di Universitas AMIKOM Yogyakarta (Angkatan 2025). Perjalanan digital saya dimulai sejak lulus dari SMA Negeri 3 Ketapang, di mana ketertarikan saya pada dunia teknologi dan visual mulai tumbuh.
+                                Saat ini, saya fokus mendalami pembuatan website yang tidak hanya clean dan responsif, tetapi juga memiliki estetika visual yang kuat. 
+                                Dengan mengombinasikan logika pemrograman web dan desain antarmuka (UI) modern, saya berkomitmen untuk terus belajar dan menghadirkan pengalaman digital yang interaktif, optimal, dan ramah pengguna.
+                            </p>
+                            
+                            <div class="inline-block bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl px-5 py-3 shadow-lg shadow-black/40">
+                                <p class="text-xs md:text-sm text-gray-300 italic font-medium tracking-wide">
+                                    "Transforming creative visions from high school roots into modern, pixel-perfect digital experiences."
+                                </p>
+                            </div>
+                            
+                            <div class="flex space-x-4 pt-4">
+                                <button @click="downloadCV()" class="bg-white text-black px-8 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl transform hover:scale-105 transition-all duration-300 inline-block cursor-pointer">
+                                    Download CV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center md:justify-end md:col-span-5 animate-custom-photo">
+                            <div class="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-[380px] lg:h-[380px] rounded-full overflow-hidden border-[12px] border-[#0f0f0f] shadow-2xl">
+                                <img src="asset/aboutme.jpeg" class="w-full h-full object-cover" alt="About Me Ferdi">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 md:gap-5 pt-8 border-t border-white/5 w-full animate-custom-text">
+                        <div class="bg-[#0b0b0b] border border-[#141414] hover:border-gray-800 rounded-2xl p-4 md:p-6 relative flex flex-col justify-between aspect-[2.5/1] min-h-[85px] transition-all duration-300">
+                            <div class="flex justify-between items-start text-gray-400">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                                <span class="text-xs md:text-sm font-bold font-mono text-gray-500">1</span>
+                            </div>
+                            <div class="flex justify-between items-end mt-4">
+                                <span class="text-[9px] md:text-[11px] tracking-widest text-gray-400 uppercase font-bold">Projects</span>
+                                <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#0b0b0b] border border-[#141414] hover:border-gray-800 rounded-2xl p-4 md:p-6 relative flex flex-col justify-between aspect-[2.5/1] min-h-[85px] transition-all duration-300">
+                            <div class="flex justify-between items-start text-gray-400">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-6.75a1.125 1.125 0 00-1.125 1.125v3.375m9 0M9 10.5h.008v.008H9V10.5zm3 0h.008v.008H12V10.5zm3 0h.008v.008H15V10.5zM12 3a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                                <span class="text-xs md:text-sm font-bold font-mono text-gray-500">1</span>
+                            </div>
+                            <div class="flex justify-between items-end mt-4">
+                                <span class="text-[9px] md:text-[11px] tracking-widest text-gray-400 uppercase font-bold">Certificates</span>
+                                <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#0b0b0b] border border-[#141414] hover:border-gray-800 rounded-2xl p-4 md:p-6 relative flex flex-col justify-between aspect-[2.5/1] min-h-[85px] transition-all duration-300">
+                            <div class="flex justify-between items-start text-gray-400">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0a15.691 15.691 0 002.193-8.5H9.807A15.691 15.691 0 0012 21zm0-18a15.691 15.691 0 012.193 8.5H9.807A15.691 15.691 0 0112 3zm6.82 5.5H5.18M18.82 14.5H5.18"/></svg>
+                                <span class="text-xs md:text-sm font-bold font-mono text-gray-500">2</span>
+                            </div>
+                            <div class="flex justify-between items-end mt-4">
+                                <span class="text-[9px] md:text-[11px] tracking-widest text-gray-400 uppercase font-bold">Completed Works</span>
+                                <svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="portfolio" class="min-h-screen py-24 md:py-32 px-6 md:px-16 lg:px-32 border-b border-white/5" x-data="{ tab: 'projects' }">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-12 md:mb-16">
+                        <h2 class="font-syne text-4xl md:text-5xl lg:text-6xl mb-4 uppercase tracking-tighter">PORTOFOLIO</h2>
+                        <div class="flex justify-center mt-8 md:mt-10">
+                            <div class="bg-[#0f0f0f] p-1.5 rounded-full border border-[#222] flex flex-wrap gap-1 justify-center">
+                                <button @click="tab='projects'" :class="tab==='projects'?'bg-[#222] text-white shadow-lg':'text-gray-500'" class="px-6 md:px-10 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Projects</button>
+                                <button @click="tab='certs'"    :class="tab==='certs'   ?'bg-[#222] text-white shadow-lg':'text-gray-500'" class="px-6 md:px-10 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Certificates</button>
+                                <button @click="tab='stack'"    :class="tab==='stack'   ?'bg-[#222] text-white shadow-lg':'text-gray-500'" class="px-6 md:px-10 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all">Tech Stack</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative min-h-[400px]" x-data="{ openModal: false, openCertModal: false }">
+                <div x-show="tab==='projects'" 
+                    x-transition:enter="transition ease-out duration-700" 
+                    x-transition:enter-start="opacity-0 -translate-x-20" 
+                    x-transition:enter-end="opacity-100 translate-x-0" 
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    
+                    <div class="card-main group flex flex-col justify-between">
+                        <div>
+                            <div class="aspect-video bg-[#1a1a1a] rounded-xl mb-6 overflow-hidden">
+                                <img src="asset/web.jpeg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-700">
+                            </div>
+                            <h3 class="font-syne text-xl mb-2 uppercase tracking-tighter">Web Portofolio</h3>
+                        </div>
+                        <div class="mt-6">
+                            <button @click="openModal = true" class="w-full text-center border border border-white/10 hover:border-white bg-[#141414] hover:bg-white hover:text-black py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300">
+                                Detail
+                            </button>
+                        </div>
+                    </div>
+
+                    <div x-show="openModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
+                        <div @click.away="openModal = false" class="bg-[#0b0b0b] border border-[#141414] w-full max-w-4xl rounded-2xl p-6 md:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 scale-95 translate-y-4" x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                            <button @click="openModal = false" class="absolute top-5 right-5 text-gray-500 hover:text-white transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                            <button @click="openModal = false" class="text-xs text-gray-500 hover:text-white flex items-center gap-1 mb-4 transition">← Back</button>
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <div class="lg:col-span-7 space-y-6">
+                                    <h3 class="text-3xl font-syne uppercase tracking-tighter text-white">Project Portofolio</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">Portofolio adalah kumpulan dokumen, karya, proyek, atau pencapaian terbaik seseorang yang disusun secara sistematis untuk menunjukkan kemampuan, pengalaman, dan keahlian diri di bidang tertentu.</p>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="bg-[#111] border border-[#1c1c1c] rounded-xl p-4 flex items-center gap-3">
+                                            <div class="text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg></div>
+                                            <div><span class="text-xl font-bold text-white block">3</span><span class="text-[10px] uppercase text-gray-500 tracking-wider">Technologies used</span></div>
+                                        </div>
+                                        <div class="bg-[#111] border border-[#1c1c1c] rounded-xl p-4 flex items-center gap-3">
+                                            <div class="text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l8.954-3.055a11.95 11.95 0 01-5.841-2.041zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                                            <div><span class="text-xl font-bold text-white block">3</span><span class="text-[10px] uppercase text-gray-500 tracking-wider">Key Features</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <a href="https://www.linkedin.com/login/in/?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 bg-white text-black py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gray-200 transition-all text-center">Live Preview <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg></a>
+                                        <a href="https://github.com/login" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 border border-white/10 bg-[#141414] hover:bg-white/5 text-white py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all text-center">Source Code <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg></a>
+                                    </div>
+                                    <div class="pt-2">
+                                        <h4 class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-3">Technologies Used</h4>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="bg-[#111] border border-[#1c1c1c] text-gray-300 text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>Next.js</span>
+                                            <span class="bg-[#111] border border-[#1c1c1c] text-gray-300 text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>Tailwind</span>
+                                            <span class="bg-[#111] border border-[#1c1c1c] text-gray-300 text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>TypeScript</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-5 space-y-6">
+                                    <div class="border border-[#1c1c1c] rounded-2xl overflow-hidden bg-[#111] shadow-inner"><img src="asset/web.jpeg" class="w-full object-cover"></div>
+                                    <div class="bg-[#111] border border-[#1c1c1c] rounded-2xl p-5 md:p-6">
+                                        <h4 class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.381-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>Key Features</h4>
+                                        <ul class="space-y-3 text-xs md:text-sm text-gray-400">
+                                            <li class="flex items-start gap-2.5"><span class="text-gray-600 mt-0.5">•</span>Website full minimalis</li>
+                                            <li class="flex items-start gap-2.5"><span class="text-gray-600 mt-0.5">•</span>Lanyard interaktif elegan</li>
+                                            <li class="flex items-start gap-2.5"><span class="text-gray-600 mt-0.5">•</span>Fitur responsive</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <div x-show="tab==='certs'" 
+                    x-transition:enter="transition ease-out duration-700" 
+                    x-transition:enter-start="opacity-0 -translate-x-20" 
+                    x-transition:enter-end="opacity-100 translate-x-0" 
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    
+                    <div @click="openCertModal = true" class="card-main group cursor-pointer border border-[#1a1a1a] hover:border-white transition-all duration-300">
+                        <div class="aspect-[4/3] bg-[#1a1a1a] rounded-xl mb-4 overflow-hidden border border-[#222] flex items-center justify-center relative">
+                            <img src="asset/sertifikat.jpeg" class="w-full h-full object-contain p-4 grayscale group-hover:grayscale-0 transition duration-700">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-300">
+                                <span class="bg-black/80 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl backdrop-blur-sm">Lihat Sertifikat</span>
+                            </div>
+                        </div>
+                        <h3 class="font-syne text-sm uppercase tracking-widest text-center text-gray-400 group-hover:text-white transition">Sains Certificate</h3>
+                    </div>
+
+                    <div x-show="openCertModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
+                        <div @click.away="openCertModal = false" class="relative max-w-4xl w-full flex flex-col items-center" x-transition:enter="transition ease-out duration-300 transform" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                            <button @click="openCertModal = false" class="absolute -top-12 right-0 md:-right-4 text-gray-400 hover:text-white bg-[#111] border border-[#222] p-2.5 rounded-full transition shadow-xl"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                            <div class="bg-[#0c0c0c] border border-[#1c1c1c] p-2 md:p-3 rounded-2xl shadow-2xl overflow-hidden max-h-[80vh] flex items-center justify-center"><img src="asset/sertifikat.jpeg" class="w-full h-auto max-h-[75vh] object-contain rounded-xl"></div>
+                            <p class="text-xs text-gray-400 font-mono mt-4 tracking-wide bg-[#0c0c0c] border border-[#1c1c1c] px-4 py-1.5 rounded-full">Sains Certificate — Ferdi Ardianto</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="tab==='stack'" 
+                    x-transition:enter="transition ease-out duration-700" 
+                    x-transition:enter-start="opacity-0 -translate-x-20" 
+                    x-transition:enter-end="opacity-100 translate-x-0" 
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+                    
+                    <template x-for="tech in [
+                        {n:'React.js',    i:'asset/ReactJs.png'},
+                        {n:'TypeScript',  i:'asset/TypeScript.png'},
+                        {n:'TailWind',    i:'asset/TailWind.png'},
+                        {n:'HTML',        i:'asset/HTML.png'},
+                        {n:'CSS',         i:'asset/CSS.png'},
+                        {n:'PHP',         i:'asset/PHP.png'},
+                        {n:'Laravel',     i:'asset/Laravel.png'},  
+                        {n:'Next.js',     i:'asset/Nextjs.png'},
+                        {n:'JavaScript',  i:'asset/JavaScript.png'},
+                        {n:'MySQL',       i:'asset/MySQL.png'}
+                    ]">
+                        <div class="bg-[#0b0b0b] border border-[#141414] rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:border-white/20 hover:bg-[#0f0f0f] group">
+                            <div class="w-14 h-14 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                                <img :src="tech.i" class="w-10 h-10 object-contain filter brightness-90 group-hover:brightness-100" :alt="tech.n">
+                            </div>
+                            <span class="text-[11px] font-medium text-gray-400 tracking-wide transition-colors group-hover:text-white" x-text="tech.n"></span>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 overflow-hidden pointer-events-none select-none opacity-[0.03] z-0">
+                    <h2 class="font-syne text-[15vw] font-black uppercase tracking-tighter text-transparent" style="-webkit-text-stroke: 2px white; whitespace: nowrap;">
+                        FRONTEND ARCHIVE • FRONTEND ARCHIVE
+                    </h2>
+                </div>
+            </div>
+
+            <section id="education" class="w-full bg-transparent py-24 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+        
+        <div class="w-full mb-20">
+            <div class="mb-8 select-none">
+                <span class="font-mono text-xs text-purple-500 tracking-widest uppercase block mb-1">JOURNEY</span>
+                <h2 class="font-syne text-2xl font-bold text-white uppercase tracking-tight">Riwayat Pendidikan</h2>
+            </div>
+
+            <ul class="list-none p-0 m-0 space-y-4 w-full">
+                
+                <li class="group block w-full bg-white/[0.015] backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-300 hover:bg-white/[0.03] hover:border-white/10">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <span class="font-mono text-[10px] text-purple-400 font-semibold tracking-wider bg-purple-500/10 px-2 py-0.5 rounded">2025 — SEKARANG</span>
+                            <h3 class="font-syne text-lg font-bold text-white uppercase mt-3 group-hover:text-purple-300 transition-colors">
+                                Universitas AMIKOM Yogyakarta
+                            </h3>
+                            <p class="font-sans text-xs text-gray-400 mt-1">S1 - Sistem Informasi</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="font-mono text-xs text-gray-500">Yogyakarta, Indonesia</span>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="group block w-full bg-white/[0.015] backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-300 hover:bg-white/[0.03] hover:border-white/10">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <span class="font-mono text-[10px] text-gray-400 tracking-wider bg-white/5 px-2 py-0.5 rounded">2022 — 2025</span>
+                            <h3 class="font-syne text-lg font-bold text-white uppercase mt-3 group-hover:text-purple-300 transition-colors">
+                                SMA NEGERI 3 KETAPANG
+                            </h3>
+                            <p class="font-sans text-xs text-gray-400 mt-1">Ilmu Pengetahuan Alam</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="font-mono text-xs text-gray-500">Kalimantan Barat, Indonesia</span>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="group block w-full bg-white/[0.015] backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-300 hover:bg-white/[0.03] hover:border-white/10">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <span class="font-mono text-[10px] text-gray-400 tracking-wider bg-white/5 px-2 py-0.5 rounded">2019 — 2022</span>
+                            <h3 class="font-syne text-lg font-bold text-white uppercase mt-3 group-hover:text-purple-300 transition-colors">
+                                SMP NEGERI 6 KETAPANG
+                            </h3>
+                            <p class="font-sans text-xs text-gray-400 mt-1">Pendidikan Dasar Menengah</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="font-mono text-xs text-gray-500">Kalimantan Barat, Indonesia</span>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="group block w-full bg-white/[0.015] backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-300 hover:bg-white/[0.03] hover:border-white/10">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <span class="font-mono text-[10px] text-gray-400 tracking-wider bg-white/5 px-2 py-0.5 rounded">2013 — 2019</span>
+                            <h3 class="font-syne text-lg font-bold text-white uppercase mt-3 group-hover:text-purple-300 transition-colors">
+                                SD NEGERI 18 DELTA PAWAN
+                            </h3>
+                            <p class="font-sans text-xs text-gray-400 mt-1">Pendidikan Dasar</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="font-mono text-xs text-gray-500">Kalimantan Barat, Indonesia</span>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="group block w-full bg-white/[0.015] backdrop-blur-sm border border-white/5 rounded-xl p-6 transition-all duration-300 hover:bg-white/[0.03] hover:border-white/10">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                        <div>
+                            <span class="font-mono text-[10px] text-gray-400 tracking-wider bg-white/5 px-2 py-0.5 rounded">2011 — 2013</span>
+                            <h3 class="font-syne text-lg font-bold text-white uppercase mt-3 group-hover:text-purple-300 transition-colors">
+                                TK PEMBINA 
+                            </h3>
+                            <p class="font-sans text-xs text-gray-400 mt-1">Taman Kanak — Kanak</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <span class="font-mono text-xs text-gray-500">Kalimantan Barat, Indonesia</span>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+
+        <div id="skills" class="w-full pt-12 border-t border-white/5 scroll-mt-24">
+            <div class="mb-8 select-none">
+                <span class="font-mono text-xs text-purple-500 tracking-widest uppercase block mb-1">COMPETENCIES</span>
+                <h2 class="font-syne text-2xl font-bold text-white uppercase tracking-tight">Bidang Keahlian & Skill</h2>
+            </div>
+
+            <div class="w-full overflow-x-auto">
+                <table class="w-full text-left border-collapse bg-transparent font-sans">
+                    <thead>
+                        <tr class="border-b border-white/10 text-mono text-[10px] text-purple-400 uppercase tracking-widest">
+                            <th class="pb-4 font-semibold w-16">No</th>
+                            <th class="pb-4 font-semibold w-1/4">Bidang</th>
+                            <th class="pb-4 font-semibold">Deskripsi Kompetensi Teknis</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-xs md:text-sm">
+                        
+                        <tr class="group hover:bg-white/[0.02] transition-colors duration-200">
+                            <td class="py-5 font-mono text-gray-500 group-hover:text-purple-400">01</td>
+                            <td class="py-5 font-syne font-bold text-white uppercase tracking-wide group-hover:text-purple-300">Junior Fronted Developer</td>
+                            <td class="py-5 text-gray-400 leading-relaxed">Slicing desain antarmuka (UI) menjadi kode halaman web yang responsif, rapi, dan interaktif menggunakan HTML5, CSS3, Bootstrap, dan Tailwind CSS</td>
+                        </tr>
+
+                        <tr class="group hover:bg-white/[0.02] transition-colors duration-200">
+                            <td class="py-4 font-mono text-gray-500 group-hover:text-purple-400">02</td>
+                            <td class="py-4 font-syne font-bold text-white uppercase tracking-wide group-hover:text-purple-300">Android UI</td>
+                            <td class="py-4 text-gray-400 leading-relaxed">Pengembangan tampilan antarmuka (layout XML) dan implementasi fungsi logika dasar pada aplikasi Android menggunakan bahasa Kotlin melalui Android Studio.</td>
+                        </tr>
+
+                        <tr class="group hover:bg-white/[0.02] transition-colors duration-200">
+                            <td class="py-4 font-mono text-gray-500 group-hover:text-purple-400">03</td>
+                            <td class="py-4 font-syne font-bold text-white uppercase tracking-wide group-hover:text-purple-300">Photography</td>
+                            <td class="py-4 text-gray-400 leading-relaxed">Kurasi aset komersial untuk pasar komersil global, optimasi metadata deskripsi Inggris di Shutterstock.</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+           <section id="gallery" class="py-24 md:py-32 px-6 md:px-16 lg:px-32 border-b border-white/5 bg-transparent w-full overflow-hidden" 
+                x-data="{ 
+                    galleryInView: false, 
+                    openImgModal: false, 
+                    activeSrc: '', 
+                    activeTitle: '',
+                    activeDesc: '' 
+                }" 
+                x-intersect.once="galleryInView = true">
+            
+            <div class="max-w-7xl mx-auto mb-20">
+                <p class="text-[10px] tracking-[0.4em] text-gray-600 uppercase mb-4 font-bold">Moments</p>
+                <h2 class="font-syne text-4xl md:text-5xl lg:text-6xl uppercase tracking-tighter text-white">Photo Gallery</h2>
+            </div>
+
+           <div class="relative w-full h-[400px] md:h-[500px] flex items-center justify-center select-none mx-auto" 
+                style="perspective: 2000px;" 
+                :class="galleryInView ? 'gallery-opened' : 'gallery-closed'">
+                
+                <div @click="activeSrc = 'asset/campuslife.jpeg'; activeTitle = 'Campus Life'; activeDesc = 'Aktivitas akademik dan keseruan dunia perkuliahan di Universitas AMIKOM Yogyakarta.'; openImgModal = true"
+                    class="gallery-card card-paling-kiri" 
+                    style="--tx-desk: -340px; --tx-mob: -110px; --ty-desk: 50px; --ty-mob: 25px; --deg: -22deg; z-index: 30;">
+                    <img src="asset/campuslife.jpeg" alt="Campus Life">
+                    <div class="card-overlay">
+                        <span class="font-syne text-[10px] md:text-xs text-white uppercase tracking-wider text-center">Campus Life</span>
+                    </div>
+                </div>
+
+                <div @click="activeSrc = 'asset/codingsession.jpeg'; activeTitle = 'Coding Session'; activeDesc = 'Proses di balik layar saat merancang logika program dan mengoptimalkan kode portofolio.'; openImgModal = true"
+                    class="gallery-card card-kiri" 
+                    style="--tx-desk: -170px; --tx-mob: -55px; --ty-desk: 12px; --ty-mob: 7px; --deg: -11deg; z-index: 40;">
+                    <img src="asset/codingsession.jpeg" alt="Coding Session">
+                    <div class="card-overlay">
+                        <span class="font-syne text-[10px] md:text-xs text-white uppercase tracking-wider text-center">Coding Session</span>
+                    </div>
+                </div>
+
+                <div @click="activeSrc = 'asset/aboutme.jpeg'; activeTitle = 'My Profile'; activeDesc = 'Representasi profesional saya sebagai pengembang frontend yang berdedikasi tinggi.'; openImgModal = true"
+                    class="gallery-card card-tengah" 
+                    style="--tx-desk: 0px; --tx-mob: 0px; --ty-desk: 0px; --ty-mob: 0px; --deg: 0deg; z-index: 50;">
+                    <img src="asset/aboutme.jpeg" alt="My Profile">
+                    <div class="card-overlay">
+                        <span class="font-syne text-[10px] md:text-xs text-white uppercase tracking-wider text-center">My Profile</span>
+                    </div>
+                </div>
+
+                <div @click="activeSrc = 'asset/workspace.jpeg'; activeTitle = 'Work Space'; activeDesc = 'Ruang kerja minimalis tempat ide-ide digital dieksekusi menjadi karya nyata.'; openImgModal = true"
+                    class="gallery-card card-kanan" 
+                    style="--tx-desk: 170px; --tx-mob: 55px; --ty-desk: 12px; --ty-mob: 7px; --deg: 11deg; z-index: 40;">
+                    <img src="asset/workspace.jpeg" alt="Work Space">
+                    <div class="card-overlay">
+                        <span class="font-syne text-[10px] md:text-xs text-white uppercase tracking-wider text-center">Work Space</span>
+                    </div>
+                </div>
+
+                <div @click="activeSrc = 'asset/naturetrip.jpeg'; activeTitle = 'Nature Trip'; activeDesc = 'Eksplorasi alam bebas di waktu luang untuk menyegarkan pikiran dan mencari inspirasi baru.'; openImgModal = true"
+                    class="gallery-card card-paling-kanan" 
+                    style="--tx-desk: 340px; --tx-mob: 110px; --ty-desk: 50px; --ty-mob: 25px; --deg: 22deg; z-index: 30;">
+                    <img src="asset/naturetrip.jpeg" alt="Nature Trip">
+                    <div class="card-overlay">
+                        <span class="font-syne text-[10px] md:text-xs text-white uppercase tracking-wider text-center">Nature Trip</span>
+                    </div>
+                </div>
+
+        </div>
+
+            <div x-show="openImgModal" 
+                class="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200"
+                style="display: none;">
+                
+                <div @click.away="openImgModal = false" class="relative max-w-2xl w-full flex flex-col items-center space-y-4">
+                    <button @click="openImgModal = false" class="absolute -top-12 right-0 text-gray-500 hover:text-white transition bg-[#0a0a0a] border border-[#141414] p-2 rounded-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+
+                    <div class="bg-[#0c0c0c] border border-[#1a1a1a] p-1.5 rounded-2xl shadow-2xl max-h-[55vh] overflow-hidden flex items-center justify-center w-full">
+                        <img :src="activeSrc" class="w-full h-auto max-h-[52vh] object-contain rounded-xl" :alt="activeTitle">
+                    </div>
+                    
+                    <div class="bg-[#0c0c0c] border border-[#141414] rounded-2xl p-5 w-full text-center space-y-2 shadow-xl">
+                        <h3 class="font-syne text-sm md:text-base text-white uppercase tracking-widest font-bold" x-text="activeTitle"></h3>
+                        <div class="w-8 h-[1px] bg-gray-700 mx-auto my-1"></div>
+                        <p class="text-[11px] md:text-xs text-gray-400 leading-relaxed max-w-xl mx-auto font-sans" x-text="activeDesc"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full pt-16 space-y-16 relative">
+
+            <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 px-2 text-center md:text-left animate-custom-text">
+                
+                <div class="space-y-2 bg-[#050505]/40 border border-white/[0.02] p-6 rounded-2xl hover:border-white/10 transition duration-300">
+                    <span class="font-mono text-[9px] text-gray-600 uppercase tracking-widest block">01 / Commercial</span>
+                    <h4 class="font-syne text-xs text-white uppercase tracking-wider">Stock Photography</h4>
+                    <p class="text-[11px] text-gray-500 leading-relaxed font-sans">Aset gambar digital yang dikurasi khusus untuk kebutuhan komersial dan marketplace global seperti Shutterstock untuk melatih aspek visual.</p>
+                </div>
+
+                <div class="space-y-2 bg-[#050505]/40 border border-white/[0.02] p-6 rounded-2xl hover:border-white/10 transition duration-300">
+                    <span class="font-mono text-[9px] text-gray-600 uppercase tracking-widest block">02 / Editorial</span>
+                    <h4 class="font-syne text-xs text-white uppercase tracking-wider">Campus Life Docs</h4>
+                    <p class="text-[11px] text-gray-500 leading-relaxed font-sans">Arsip dokumentasi kegiatan perkuliahan, sesi coding, hingga momen esensial sepanjang perjalanan akademik saya di Universitas AMIKOM.</p>
+                </div>
+
+                <div class="space-y-2 bg-[#050505]/40 border border-white/[0.02] p-6 rounded-2xl hover:border-white/10 transition duration-300">
+                    <span class="font-mono text-[9px] text-gray-600 uppercase tracking-widest block">03 / Perspective</span>
+                    <h4 class="font-syne text-xs text-white uppercase tracking-wider">Geometry & UI/UX</h4>
+                    <p class="text-[11px] text-gray-500 leading-relaxed font-sans">Eksplorasi sudut pandang simetris, tata ruang kota, dan permainan pencahayaan alami untuk mengasah intuisi estetika desain antarmuka.</p>
+                </div>
+
+            </div>
+
+        </section>  
+       
+        <section class="container mt-5">
+            
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-info">Video youtube</h2>
+                
+                <p class="text-light">
+                    Selain menampilkan biodata dan portfolio, pada website ini saya juga 
+                    menambahkan video YouTube favorit sebagai tambahan hiburan sekaligus 
+                    untuk membuat tampilan website menjadi lebih menarik dan interaktif. 
+                    Video ini ditampilkan menggunakan fitur embedded YouTube sehingga 
+                    pengunjung dapat langsung menonton video tanpa harus keluar dari website.
+                </p>
+
+                <p class="text-light">
+                    Penggunaan embedded video juga membuat website terlihat lebih modern 
+                    serta tidak monoton karena memiliki tambahan konten multimedia. 
+                    Selain itu tampilan video dibuat responsive menggunakan Bootstrap 
+                    agar tetap rapi ketika dibuka melalui laptop maupun handphone.
+                </p>
+            </div>
+
+            <div class="ratio ratio-16x9 shadow rounded">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/QKE9ulqoYF0?si=dezEautzsPkjdeWf" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+                gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                </iframe>
+            </div>
+
+        </section>
+
+        <section id="contact" class="w-full bg-transparent py-20 px-6 border-t border-white/5 relative z-10">
+    <div class="max-w-5xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-12 w-full">
+            
+            <div class="max-w-md select-none">
+                <span class="font-mono text-xs text-purple-400 tracking-widest uppercase block mb-2">GET IN TOUCH</span>
+                <h2 class="font-syne text-3xl font-bold text-white uppercase tracking-tight mb-4">
+                    Tertarik Hubungi Saya?
+                </h2>
+                <p class="font-sans text-xs text-gray-400 leading-relaxed">
+                    Silakan klik tombol di samping untuk memulai diskusi proyek, penawaran kerja sama, atau sekadar menyapa mahasiswa Universitas AMIKOM Yogyakarta.
+                </p>
+            </div>
+
+            <div x-data="{ 
+                disetujui: false, 
+                showSukses: false,
+                kirimForm() {
+                    // Logika memunculkan modal sukses langsung di layar
+                    this.showSukses = true;
+                    
+                    // Mengosongkan kembali isi form setelah terkirim
+                    this.$refs.formKontak.reset();
+                    this.disetujui = false;
+                }
+            }" class="relative">
+
+                <form ref="formKontak" @submit.prevent="kirimForm()" class="space-y-4">
+                    
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-4 flex items-center text-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                        </span>
+                        <input type="text" placeholder="Nama Lengkap / Instansi" required class="w-full bg-[#111] border border-[#1c1c1c] rounded-xl py-3.5 pl-11 pr-4 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-gray-500 transition">
+                    </div>
+
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-4 flex items-center text-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615a2.25 2.25 0 01-1.07-1.916V6.75"></svg>
+                        </span>
+                        <input type="email" placeholder="Alamat Email Anda" required class="w-full bg-[#111] border border-[#1c1c1c] rounded-xl py-3.5 pl-11 pr-4 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-gray-500 transition">
+                    </div>
+
+                    <div class="relative">
+                        <span class="absolute top-4 left-4 text-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                        </span>
+                        <textarea rows="3" placeholder="Deskripsikan maksud proyek kerja sama atau keperluan Anda..." required class="w-full bg-[#111] border border-[#1c1c1c] rounded-xl py-3.5 pl-11 pr-4 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-gray-500 transition resize-none"></textarea>
+                    </div>
+                    
+                    <div class="bg-[#111]/30 border border-[#1c1c1c] rounded-xl p-3.5 flex items-start gap-3 mt-2">
+                        <input type="checkbox" id="persetujuan" x-model="disetujui" class="mt-0.5 w-3.5 h-3.5 rounded accent-white bg-black border border-white/10 cursor-pointer">
+                        <label for="persetujuan" class="text-[10px] md:text-xs text-gray-400 leading-relaxed select-none cursor-pointer">
+                            Saya menyatakan bahwa data di atas adalah benar dan saya menyetujui ketentuan formulir kontak ini untuk keperluan diskusi proyek profesional dengan <span class="text-white font-medium">Ferdi Ardianto</span>.
+                        </label>
+                    </div>
+
+                    <button type="submit" 
+                            :disabled="!disetujui"
+                            :class="disetujui ? 'bg-white text-black hover:bg-gray-200 cursor-pointer' : 'bg-[#141414] text-gray-600 border border-white/5 cursor-not-allowed'"
+                            class="w-full py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Kirim Formulir Persetujuan
+                    </button>
+                </form>
+
+                <div x-show="showSukses" 
+                    class="absolute inset-0 bg-black/95 border border-[#141414] rounded-2xl p-6 flex flex-col items-center justify-center text-center z-50 backdrop-blur-sm"
+                    x-transition:enter="transition ease-out duration-400"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-300"
+                    style="display: none;">
+                    
+                    <div class="w-14 h-14 rounded-full bg-[#120e1e] border border-[#2d1f4d] shadow-[0_0_20px_rgba(76,29,149,0.3)] flex items-center justify-center mb-4 text-white">
+                        <svg class="w-7 h-7 text-gray-200" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+
+                    <h4 class="font-syne text-lg uppercase tracking-tight text-white mb-2">Formulir Disetujui!</h4>
+                    <p class="text-gray-500 text-[11px] md:text-xs max-w-xs leading-relaxed mb-6">Terima kasih. Data persetujuan Anda berhasil divalidasi dan disimpan di sistem penampung lokal.</p>
+                    
+                    <button @click="showSukses = false" class="border border-white/10 hover:border-white/20 bg-[#111] text-gray-400 hover:text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition duration-300">
+                        Kembali
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+                
+                <a href="mailto:Ferdi@example.com" 
+                   class="group inline-flex items-center gap-3 px-6 py-4 bg-white/5 hover:bg-purple-500/10 border border-white/10 hover:border-purple-500/30 rounded-xl transition-all duration-300">
+                    <span class="font-mono text-xs text-white uppercase tracking-wider group-hover:text-purple-400 transition-colors">
+                        Kirim Email
+                    </span>
+                    <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 002-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                </a>
+
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                   class="group inline-flex items-center gap-3 px-6 py-4 bg-white/[0.015] hover:bg-white/[0.04] border border-white/5 hover:border-white/10 rounded-xl transition-all duration-300">
+                    <span class="font-mono text-xs text-gray-400 group-hover:text-white uppercase tracking-wider transition-colors">
+                        LinkedIn
+                    </span>
+                </a>
+
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                   class="group inline-flex items-center gap-3 px-6 py-4 bg-white/[0.015] hover:bg-white/[0.04] border border-white/5 hover:border-white/10 rounded-xl transition-all duration-300">
+                    <span class="font-mono text-xs text-gray-400 group-hover:text-white uppercase tracking-wider transition-colors">
+                        Instagram
+                    </span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    </div></div></div></div> <div class="clear-both w-full block h-4"></div>
+
+<footer class="w-full bg-transparent border-t border-white/5 pt-24 pb-12 px-6 md:px-16 lg:px-32 relative block clear-both z-[999] mt-40">
+    <div class="max-w-7xl mx-auto w-full block space-y-16">
+        
+        <div class="flex flex-col md:flex-row items-start justify-between gap-12 w-full">
+            
+            <div class="block min-w-[280px]">
+                <h3 class="font-syne text-4xl md:text-5xl font-bold uppercase tracking-tighter text-white leading-none">
+                    LET'S WORK<br>TOGETHER
+                </h3>
+                <a href="mailto:ferdi@example.com" class="font-mono text-xs md:text-sm text-gray-400 hover:text-white transition duration-300 block pt-4">
+                    ferdi@example.com
+                </a>
+            </div>
+
+            <div class="flex flex-row flex-wrap items-center gap-x-8 gap-y-4 pt-2 w-full md:w-auto justify-start md:justify-end">
+                <a href="https://instagram.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">INSTAGRAM</a>
+                <a href="https://github.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">GITHUB</a>
+                <a href="https://tiktok.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">TIKTOK</a>
+                <a href="https://shutterstock.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">SHUTTERSTOCK</a>
+            </div>
+
+        </div>
+
+        <div class="border-t border-white/5 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 w-full">
+            
+            <div class="block text-left w-full md:w-auto space-y-1">
+                <p class="text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                    &copy; 2026 FERDI ARDIANTO — NIM 25.12.3554
+                </p>
+                <p class="text-[9px] text-gray-600 font-sans block">
+                    All Rights Reserved. Handcrafted with Tailwind CSS & Alpine.js
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2 bg-[#0c0c0c] border border-white/5 px-4 py-2.5 rounded-xl shadow-xl shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                    UNIVERSITAS AMIKOM YOGYAKARTA
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+
+    (function() {
+
+        document.addEventListener('alpine:init', () => {});
+        window.addEventListener('load', initLanyard);
+
+        function initLanyard() {
+            const root   = document.getElementById('lanyard-root');
+            const card   = document.getElementById('lanyard-card');
+            const svg    = document.getElementById('lanyard-svg');
+            if (!root || !card || !svg) return;
+
+            const rlBody      = document.getElementById('rl-body');
+            const rlShine     = document.getElementById('rl-shine');
+            const rlDash      = document.getElementById('rl-dash');
+            const rlTextPath  = document.getElementById('rl-text-path');
+            const rrBody      = document.getElementById('rr-body');
+            const rrShine     = document.getElementById('rr-shine');
+            const rrDash      = document.getElementById('rr-dash');
+            const rrTextPath  = document.getElementById('rr-text-path');
+            const clipGroup   = document.getElementById('clip-group');
+
+            let dragging = false;
+            let startX = 0, startY = 0;
+            let cardX  = 0, cardY  = 0;   
+            let velX   = 0, velY   = 0;
+            const K       = 0.11;
+            const DAMPING = 0.78;
+            let rafId = null;
+
+            function getW() { return root.offsetWidth; }
+            function drawRopes() {
+                const W      = getW();
+                const cx     = W / 2;
+
+                const ax     = cx + cardX * 0.10;
+                const ay     = 28;                       
+                const roofY  = root.offsetHeight - card.offsetHeight; 
+
+                const exL = cx + cardX - 28;
+                const exR = cx + cardX + 28;
+                const ey  = roofY + cardY;
+
+                const qLx = ax - Math.abs(ax - exL) * 0.55;
+                const qLy = ay + (ey - ay) * 0.52;
+                const qRx = ax + Math.abs(exR - ax) * 0.55;
+                const qRy = ay + (ey - ay) * 0.52;
+
+                const dL = `M${ax} ${ay} Q${qLx} ${qLy} ${exL} ${ey}`;
+                const dR = `M${ax} ${ay} Q${qRx} ${qRy} ${exR} ${ey}`;
+
+                [rlBody, rlShine, rlDash, rlTextPath].forEach(el => el.setAttribute('d', dL));
+                [rrBody, rrShine, rrDash, rrTextPath].forEach(el => el.setAttribute('d', dR));
+                clipGroup.setAttribute('transform', `translate(${ax},${ay})`);
+                card.style.transform = `translate(${cardX}px, ${cardY}px) rotate(${cardX * 0.035}deg)`;
+            }
+
+            function spring() {
+                if (dragging) return;
+                velX = (velX + (-K * cardX)) * DAMPING;
+                velY = (velY + (-K * cardY)) * DAMPING;
+                cardX += velX;
+                cardY += velY;
+                drawRopes();
+                if (Math.abs(cardX) > 0.1 || Math.abs(cardY) > 0.1 ||
+                    Math.abs(velX)  > 0.1 || Math.abs(velY)  > 0.1) {
+                    rafId = requestAnimationFrame(spring);
+                } else {
+                    cardX = 0; cardY = 0;
+                    drawRopes();
+                }
+            }
+
+            function onDown(e) {
+                dragging = true;
+                cancelAnimationFrame(rafId);
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                startX = cx - cardX;
+                startY = cy - cardY;
+                velX = 0; velY = 0;
+                e.preventDefault();
+            }
+
+            function onMove(e) {
+                if (!dragging) return;
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                cardX = cx - startX;
+                cardY = cy - startY;
+                if (cardY < -90) cardY = -90;
+                velX = 0; velY = 0;
+                drawRopes();
+            }
+
+            function onUp() {
+                if (!dragging) return;
+                dragging = false;
+                rafId = requestAnimationFrame(spring);
+            }
+
+            card.addEventListener('mousedown',   onDown,  { passive: false });
+            card.addEventListener('touchstart',  onDown,  { passive: false });
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove,  { passive: true });
+            window.addEventListener('mouseup',   onUp);
+            window.addEventListener('touchend',  onUp);
+
+            drawRopes();
+            window.addEventListener('resize', drawRopes);
+        }
+
+    })();
+
+    </script>
+
+    <script>
+        async function downloadCV() {
+            if (!window.jspdf) {
+                alert("Library PDF sedang dimuat, silakan coba lagi dalam sekejap!");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: "a4"
+            });
+
+            const primaryColor = [15, 15, 20];   
+            const secondaryColor = [80, 80, 80]; 
+            const accentColor = [67, 56, 202];   
+        
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(26);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text("FERDI ARDIANTO", 20, 22);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            doc.text("Frontend Developer | ANDROID UI", 20, 28);
+            doc.text("Yogyakarta, Indonesia | NIM: 25.12.3554 | Email: ferdi@example.com", 20, 33);
+            
+            doc.setDrawColor(220, 220, 225);
+            doc.setLineWidth(0.4);
+            doc.line(20, 38, 190, 38);
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            doc.text("TENTANG SAYA", 20, 47);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9.5);
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            const tentangText = "Halo, saya Ferdi Ardianto. Perjalanan digital saya dimulai sejak menempuh pendidikan di SMA Negeri 3 Ketapang, tempat di mana ketertarikan awal saya pada dunia teknologi dan eksplorasi visual mulai tumbuh. Saat ini, saya melanjutkan langkah akademik sebagai mahasiswa Semester 2 S1 Sistem Informasi di Universitas AMIKOM Yogyakarta.Berada di tahun pertama perkuliahan memberikan saya ruang dinamis untuk mendalami fondasi fundamental dalam Pengenalan Perancangan Web serta dasar-dasar logika sistem. Melalui transisi dari bangku sekolah menengah ke dunia perkuliahan, saya aktif mengasah kemampuan menerjemahkan konsep struktur HTML5, estetika tata letak CSS3, dan prinsip responsivitas modern ke dalam baris kode murni. Saya berfokus untuk terus berkembang, menjembatani minat kreatif dan logika analitis, serta mendokumentasikan proses adaptasi ini menjadi portofolio karya nyata yang fungsional.";
+            const splitTentang = doc.splitTextToSize(tentangText, 170);
+            doc.text(splitTentang, 20, 53);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            doc.text("RIWAYAT PENDIDIKAN", 20, 100);
+            
+            let currentY = 106;
+            const pendidikanList = [
+                {
+                    instansi: "Universitas AMIKOM Yogyakarta (2025 - Sekarang)",
+                    detail: "Perguruan Tinggi, S1 Sistem Informasi. Mengembangkan tata kelola basis data, matematika diskrit, sistem bilangan, serta rekayasa proses bisnis digital."
+                },
+                {
+                    instansi: "SMA NEGERI 3 KETAPANG (2022 - 2025)",
+                    detail: "Pendidikan Menengah Atas, JURUSAN ILMU PENGETAHUAN ALAM (IPA). Berfokus pada Pembelajaran menengah atas yaitu pelajaran formal."
+                },
+                {
+                    instansi: "SMP NEGERI 6 KETAPANG (2019 - 2022)",
+                    detail: "Pendidikan Sekolah Dasar Menengah Pertama Membangun fondasi dasar akademis, logika matematika dasar, serta kemampuan komunikasi awal."
+                },
+                {
+                    instansi: "SD NEGERI 18 DELTA PAWAN (2013 - 2019)",
+                    detail: "Pendidikan Sekolah Dasar. Pelatihan kreativitas, sosialisasi, dan pembentukan karakter dasar logika matematika dasar, fondasi akademis."
+                },
+                {
+                    instansi: "TK PEMBINA KETAPANG (2011 - 2013)",
+                    detail: "Taman Kanak - Kanak (Tk). Pelatihan kreativitas, sosialisasi, dan pembentukan karakter dasar.."
+                }
+            ];
+
+            pendidikanList.forEach((edu) => {
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10.5);
+                doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+                doc.text(edu.instansi, 20, currentY);
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+                const splitDetail = doc.splitTextToSize(edu.detail, 170);
+                doc.text(splitDetail, 20, currentY + 5);
+                
+                currentY += 15 + (splitDetail.length > 1 ? (splitDetail.length - 1) * 4 : 0);
+            });
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            doc.text("PROYEK UTAMA", 20, currentY + 4);
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text("Platform Galeri Visual & Eksplorasi Stok Foto Komersial", 20, currentY + 11);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            const p1 = "Membangun platform portfolio interaktif responsif berbasis arsitektur grid yang fully responsive. Mengintegrasikan galeri visual untuk aset komersial, lengkap dengan optimasi metadata (English Keywords & Descriptions) yang siap lisensi di platform Shutterstock. Mengembangkan simulasi interaksi fisik pegas pada ID Card lanyard kustom memanfaatkan jika pergerakan kurva SVG, Tailwind CSS, dan Alpine.js";
+            const splitP1 = doc.splitTextToSize(p1, 170);
+            doc.text(splitP1, 20, currentY + 16);
+
+            currentY += 22 + splitP1.length * 3;
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+            doc.text("Digital Asset Showcase & SEO Optimization", 20, currentY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            const p2 = "Pengembangan situs showcase digital mandiri untuk kurasi hasil fotografi komersial. Berfokus pada implementasi teknik SEO komersial untuk aset gambar, mulai dari penulisan deskripsi bahasa Inggris komersial yang tepat hingga manajemen kata kunci yang efektif guna meningkatkan keterlihatan di pasar microstock Shutterstock.";
+            const splitP2 = doc.splitTextToSize(p2, 170);
+            doc.text(splitP2, 20, currentY + 5);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+            doc.text("SERTIFIKASI", 20, 272);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9.5);
+            doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+            doc.text("- OLIMPIADE SAINS NASIONAL (SERTIFIKASI JUARA 1 OSN BIDANG ASTRONOMI TINGKAT DAERAH)", 20, 278);
+
+            doc.save("CV_Ferdi_Ardianto_Lengkap.pdf");
+        }
+        </script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script>
+    const globalCanvas = document.getElementById('global-dust');
+    
+    if (globalCanvas) {
+        const gctx = globalCanvas.getContext('2d');
+        let dustParticles = [];
+        
+        function resizeGlobalCanvas() {
+            globalCanvas.width = window.innerWidth;
+            globalCanvas.height = window.innerHeight;
+        }
+        resizeGlobalCanvas();
+        window.addEventListener('resize', resizeGlobalCanvas);
+
+        const totalDustCount = 120;
+        for(let i = 0; i < totalDustCount; i++) {
+            dustParticles.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight, 
+                r: Math.random() * 1.3 + 0.3,          
+                speedY: Math.random() * 0.4 + 0.1,     
+                opacity: Math.random() * 0.4 + 0.1    
+            });
+        }
+
+        function renderGlobalDust() {
+            gctx.clearRect(0, 0, globalCanvas.width, globalCanvas.height);
+            
+            dustParticles.forEach(p => {
+                gctx.beginPath();
+                gctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                gctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                gctx.fill();
+                
+                p.y -= p.speedY;
+                
+                if (p.y < 0) {
+                    p.y = globalCanvas.height;
+                    p.x = Math.random() * globalCanvas.width;
+                }
+            });
+            
+            requestAnimationFrame(renderGlobalDust);
+        }
+        renderGlobalDust();
+    }
+</script>
+        
+
+</body>
+</html> 

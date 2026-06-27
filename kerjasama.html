@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerja Sama - Ferdi Ardianto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+    <!--
+    Nama : Ferdi Ardianto
+    NIM : 25.12.3554
+    Tanggal : 19 Mei 2026
+    kelas : 25 SISTEM INFORMASI 03
+    -->
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        html { scroll-behavior: smooth; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .font-syne { font-family: 'Syne', sans-serif; }
+
+        .bg-grid {
+            background-size: 50px 50px;
+            background-image: linear-gradient(to right, #111 1px, transparent 1px),
+                              linear-gradient(to bottom, #111 1px, transparent 1px);
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 100%;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #fff !important;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body x-data="{ intro: true, showModal: false }" x-init="setTimeout(() => intro = false, 2500)" class="bg-grid min-h-screen">
+<body class="bg-black text-white antialiased">
+<canvas id="global-dust" class="fixed inset-0 w-full h-full pointer-events-none z-[-1] block"></canvas>
+
+    <div x-show="intro" 
+         x-transition:leave="transition ease-in duration-800" 
+         x-transition:leave-start="opacity-100" 
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[100001] bg-black flex flex-col items-center justify-center text-center">
+        <div class="flex space-x-2 mb-6">
+            <div class="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+            <div class="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></div>
+            <div class="w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.4s]"></div>
+        </div>
+        <h1 class="font-syne text-4xl md:text-6xl tracking-tighter uppercase italic">Preparing<br>Form</h1>
+    </div>
+
+    <div x-show="!intro" x-cloak>
+        <header class="py-6 px-12 md:px-32 flex justify-between items-center border-b border-white/5">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black font-syne font-bold">F</div>
+                <span class="font-syne uppercase tracking-widest text-xs text-white">Ferdi.dev</span>
+            </div>
+            <nav class="bg-transparent /80 border border-[#222] px-6 py-2.5 rounded-full flex items-center space-x-8 text-[10px] font-bold tracking-widest uppercase text-gray-500 shadow-2xl">
+                <a href="index.html" class="hover:text-white transition">Back to Home</a>
+            </nav>
+        </header>
+
+        <main class="py-20 px-12 md:px-32 max-w-4xl mx-auto">
+            <div class="mb-16 text-center md:text-left">
+                <p class="text-[10px] tracking-[0.4em] text-gray-600 uppercase mb-4 font-bold">Collaboration</p>
+                <h1 class="font-syne text-5xl md:text-7xl uppercase tracking-tighter leading-none mb-6">Let's build <br> <span class="text-white">something great</span></h1>
+                <p class="text-gray-400 max-w-md leading-relaxed">Silakan isi formulir di bawah ini untuk memulai kerja sama profesional.</p>
+            </div>
+
+            <form id="contactForm" @submit.prevent="showModal = true" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Nama Lengkap</label>
+                        <input type="text" required class="w-full bg-[#0f0f0f] border border-[#222] p-5 rounded-2xl outline-none transition text-sm">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Email Address</label>
+                        <input type="email" required class="w-full bg-[#0f0f0f] border border-[#222] p-5 rounded-2xl outline-none transition text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Kategori Proyek</label>
+                    <select required class="w-full bg-[#0f0f0f] border border-[#222] p-5 rounded-2xl outline-none transition text-sm text-gray-400 focus:text-white appearance-none">
+                        <option value="" disabled selected>Pilih Kategori...</option>
+                        <option value="web">Web Development</option>
+                        <option value="mobile">Mobile App</option>
+                        <option value="uiux">UI/UX Design</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Prioritas Proyek</label>
+                    <div class="flex flex-wrap gap-6 ml-2">
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="radio" name="priority" value="high" class="w-4 h-4 accent-white">
+                            <span class="text-sm text-gray-400 group-hover:text-white transition">High</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="radio" name="priority" value="normal" class="w-4 h-4 accent-white" checked>
+                            <span class="text-sm text-gray-400 group-hover:text-white transition">Normal</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Layanan Tambahan</label>
+                    <div class="flex flex-wrap gap-6 ml-2">
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" class="w-4 h-4 accent-white rounded">
+                            <span class="text-sm text-gray-400 group-hover:text-white transition">SEO</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer group">
+                            <input type="checkbox" class="w-4 h-4 accent-white rounded">
+                            <span class="text-sm text-gray-400 group-hover:text-white transition">Maintenance</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Jadwal Diskusi (Tanggal & Jam)</label>
+                    <input type="datetime-local" required class="w-full bg-[#0f0f0f] border border-[#222] p-5 rounded-2xl outline-none transition text-sm text-gray-400 focus:text-white [color-scheme:dark]">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Upload Brief Proyek (PDF/Image)</label>
+                    <input type="file" class="w-full bg-[#0f0f0f] border border-[#222] p-4 rounded-2xl outline-none transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-white file:text-black hover:file:bg-gray-200 cursor-pointer">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold tracking-widest text-gray-500 ml-2">Detail Pesan</label>
+                    <textarea rows="5" placeholder="Ceritakan detail proyek Anda..." required class="w-full bg-[#0f0f0f] border border-[#222] p-5 rounded-2xl outline-none transition text-sm"></textarea>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-white text-black py-5 rounded-2xl font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all">
+                        Kirim Sekarang
+                    </button>
+                    <button type="reset" class="px-10 border border-[#222] text-gray-500 py-5 rounded-2xl font-bold uppercase tracking-widest hover:text-white hover:border-white transition-all">
+                        Reset
+                    </button>
+                </div>
+            </form>
+        </main>
+
+        <footer class="w-full bg-black border-t border-white/5 pt-24 pb-12 px-6 md:px-16 lg:px-32 relative block clear-both z-[999] mt-40">
+    <div class="max-w-7xl mx-auto w-full block space-y-16">
+        
+        <div class="flex flex-col md:flex-row items-start justify-between gap-12 w-full">
+            
+            <div class="block min-w-[280px]">
+                <h3 class="font-syne text-4xl md:text-5xl font-bold uppercase tracking-tighter text-white leading-none">
+                    LET'S WORK<br>TOGETHER
+                </h3>
+                <a href="mailto:ferdi@example.com" class="font-mono text-xs md:text-sm text-gray-400 hover:text-white transition duration-300 block pt-4">
+                    ferdi@example.com
+                </a>
+            </div>
+
+            <div class="flex flex-row flex-wrap items-center gap-x-8 gap-y-4 pt-2 w-full md:w-auto justify-start md:justify-end">
+                <a href="https://instagram.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">INSTAGRAM</a>
+                <a href="https://github.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">GITHUB</a>
+                <a href="https://tiktok.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">TIKTOK</a>
+                <a href="https://shutterstock.com/" target="_blank" class="font-mono text-[11px] text-gray-400 hover:text-white uppercase tracking-widest transition duration-300 whitespace-nowrap">SHUTTERSTOCK</a>
+            </div>
+
+        </div>
+
+        <div class="border-t border-white/5 pt-10 flex flex-col md:flex-row items-center justify-between gap-6 w-full">
+            
+            <div class="block text-left w-full md:w-auto space-y-1">
+                <p class="text-[10px] md:text-xs font-mono text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                    &copy; 2026 FERDI ARDIANTO — NIM 25.12.3554
+                </p>
+                <p class="text-[9px] text-gray-600 font-sans block">
+                    All Rights Reserved. Handcrafted with Tailwind CSS & Alpine.js
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2 bg-[#0c0c0c] border border-white/5 px-4 py-2.5 rounded-xl shadow-xl shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                <p class="text-[10px] font-mono text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                    UNIVERSITAS AMIKOM YOGYAKARTA
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</footer>
+    </div>
+
+    <template x-teleport="body">
+        <div x-show="showModal" 
+             x-cloak
+             class="fixed inset-0 z-[100000] flex items-center justify-center p-6">
+            
+            <div class="absolute inset-0 bg-black/95 backdrop-blur-md" @click="showModal = false; document.getElementById('contactForm').reset();"></div>
+
+            <div x-show="showModal"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-90 translate-y-10"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 class="relative bg-[#0a0a0a] border border-[#222] p-12 rounded-[40px] max-w-sm w-full text-center shadow-2xl">
+                
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+
+                <h3 class="font-syne text-3xl text-white uppercase tracking-tighter mb-3">Terkirim!</h3>
+                <p class="text-gray-500 text-sm mb-10">Pesan Anda sudah Ferdi terima.</p>
+                
+                <button type="button" 
+                        @click="showModal = false; document.getElementById('contactForm').reset();" 
+                        class="w-full bg-white text-black py-5 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] cursor-pointer active:scale-95 transition-all">
+                    Tutup & Bersihkan
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script>
+    const globalCanvas = document.getElementById('global-dust');
+    
+    if (globalCanvas) {
+        const gctx = globalCanvas.getContext('2d');
+        let dustParticles = [];
+        
+        function resizeGlobalCanvas() {
+            globalCanvas.width = window.innerWidth;
+            globalCanvas.height = window.innerHeight;
+        }
+        resizeGlobalCanvas();
+        window.addEventListener('resize', resizeGlobalCanvas);
+
+        const totalDustCount = 120;
+        for(let i = 0; i < totalDustCount; i++) {
+            dustParticles.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight, 
+                r: Math.random() * 1.3 + 0.3,          
+                speedY: Math.random() * 0.4 + 0.1,     
+                opacity: Math.random() * 0.4 + 0.1    
+            });
+        }
+
+        function renderGlobalDust() {
+            gctx.clearRect(0, 0, globalCanvas.width, globalCanvas.height);
+            
+            dustParticles.forEach(p => {
+                gctx.beginPath();
+                gctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                gctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                gctx.fill();
+                
+                p.y -= p.speedY;
+                
+                if (p.y < 0) {
+                    p.y = globalCanvas.height;
+                    p.x = Math.random() * globalCanvas.width;
+                }
+            });
+            
+            requestAnimationFrame(renderGlobalDust);
+        }
+        renderGlobalDust();
+    }
+</script>
+
+</body>
+</html>
+
+<!--
+Nama : Ferdi Ardianto
+NIM : 25.12.3554
+Tanggal : 19 Mei 2026
+kelas : 25 SISTEM INFORMASI 03
+-->
